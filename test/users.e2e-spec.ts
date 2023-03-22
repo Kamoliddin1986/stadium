@@ -2,10 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module'
-import cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser';
 
 
-describe('UserController (e2e)', () => {
+describe("UserController (e2e)", () => {
   let app: INestApplication;
   let token: String;
   beforeAll(async () => {
@@ -20,7 +20,7 @@ describe('UserController (e2e)', () => {
     await app.init();
     
     const response = await request(app.getHttpServer())
-        .post('/api/auth/login')
+        .post('/api/users/signin')
         .send({
           email: 'Salimoboy3@mail.ru',
           password: 'Uzbek!$t0n',
@@ -31,7 +31,7 @@ describe('UserController (e2e)', () => {
        
   })
 
-  it('/users (GET) --> 200 OK', () => {
+  it('/api/users (GET) --> 200 OK', () => {
     return request(app.getHttpServer())
     .get('/api/users/all')
     .set('Authorization', `Bearer ${token}`)
@@ -39,8 +39,20 @@ describe('UserController (e2e)', () => {
     .expect(200)
   })
 
+
+  it('/api/users (POST) --> 200 OK', () => {
+    return request(app.getHttpServer())
+    .post('/api/users/signin')
+    .set({
+      password: "Uzbek!$t0n",
+      email: "Salimoboy3@mail.ru"
+    })
+    .expect('Content-Type', /json/)
+    .expect(400)
+  })
+
   afterAll(async () => {
-    await app.close();
+    await app.close()
     });
 
 
